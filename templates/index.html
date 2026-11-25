@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% set active = 'home' %}
+
+{# Reusable block that draws a list of molecules #}
+{% macro molecules(items) %}
+  <div class="mol-row">
+    {% for m in items %}
+      <figure class="mol">
+        <pre>{{ m.drawing }}</pre>
+        <figcaption>
+          <strong>{% if m.number and m.number > 1 %}{{ m.number }} × {% endif %}{{ m.name }}</strong>
+          <span>{{ m.formula }} · {{ m.short }}</span>
+        </figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% block content %}
+<section class="hero">
+  <h1>Predictive Reaction Modelling</h1>
+  <p class="lead">Explore chemical reactions. Understand transformations. Predict possible outcomes.</p>
+  <p class="muted">Enter reactants and reaction conditions to see what a simple rule-based model predicts for a small set of supported reactions.</p>
+</section>
+
+<section class="dashboard">
+
+  <!-- LEFT: INPUT -->
+  <form class="panel input-panel" method="post" action="{{ url_for('home') }}">
+    <h2>Reaction input</h2>
+
+    <label for="reactants">Reactants</label>
+    <input id="reactants" name="reactants" type="text" value="{{ form.reactants }}"
+           placeholder="e.g. Ethene + Hydrogen">
+    <p class="hint">Names or formulas, separated by + or a comma. Try ethene (C₂H₄), hydrogen (H₂), methane (CH₄), oxygen (O₂), ethanol (C₂H₅OH).</p>
+
+    {% if page.chips %}
+    <div class="recognised">
+      <p class="small-title">Recognised reactants</p>
+      {{ molecules(page.chips) }}
+    </div>
+    {% endif %}
+
+    <div class="grid-2">
+      <div>
+        <label for="catalyst">Catalyst <span class="opt">Optional</span></label>
+        <input id="catalyst" name="catalyst" type="text" value="{{ form.catalyst }}" placeholder="e.g. Nickel (Ni)">
+      </div>
+      <div>
+        <label for="solvent">Solvent <span class="opt">Optional</span></label>
+        <input id="solvent" name="solvent" type="text" value="{{ form.solvent }}" placeholder="e.g. Ethanol">
+      </div>
+      <div>
+        <label for="temperature">Temperature (°C) <span class="opt">Optional</span></label>
+        <input id="temperature" name="temperature" type="text" inputmode="decimal" value="{{ form.temperature }}" placeholder="e.g. 150">
+      </div>
+      <div>
+        <label for="pressure">Pressure (atm) <span class="opt">Optional</span></label>
+        <input id="pressure" name="pressure" type="text" inputmode="decimal" value="{{ form.pressure }}" placeholder="e.g. 1">
+      </div>
+    </div>
+
+    <label for="extra">Additional conditions <span class="opt">Optional</span></label>
+    <textarea id="extra" name="extra" rows="2" placeholder="Any other notes">{{ form.extra }}</textarea>
+
+    <div class="buttons">
+      <button type="submit" class="btn primary">Predict Reaction →</button>
+      <a href="{{ url_for('home') }}" class="btn secondary">Clear Inputs</a>
+    </div>
+  </form>
+
+  <!-- RIGHT: OUTPUT -->
+  <div class="panel output-panel">
+    <h2>Prediction output</h2>
+
+    {% if page.error %}
+      <div class="notice error">{{ page.error }}</div>
+    {% elif page.warning %}
+      <div class="notice warn">{{ page.warning }}</div>
+    {% elif page.result %}
+      {% set r = page.result %}
+      <div class="result">
+
+        <section>
+          <dl class="identity">
+            <div><dt>Reaction name</dt><dd>{{ r.name }}</dd></div>
+            <div><dt>Reaction type</dt><dd>{{ r.type }}</dd></div>
+            <div><dt>Prediction status</dt><dd><span class="badge">Supported example · illustrative</span></dd></div>
+          </dl>
+        </section>
+
+        <section>
+          <h3>Chemical equation</h3>
+          <p class="equation">{{ r.equation }}</p>
+        </section>
+
+        <section>
+          <h3>Reactants</h3>
+          {{ molecules(r.reactants) }}
+          <h3>Products</h3>
+          {{ molecules(r.products) }}
+        </section>
+
+        <section>
+          <h3>Reaction transformation</h3>
+          <ul>{% for line in r.explanation %}<li>{{ line }}</li>{% endfor %}</ul>
+          <h3>Reaction pathway</h3>
+          <p>{{ r.pathway }}</p>
+        </section>
+
+        <section>
+          <h3>Factors affecting the reaction</h3>
+          {% for f in r.factors %}
+            <div class="factor">
+              <div class="factor-head"><strong>{{ f.title }}</strong><span>{{ f.yours }}</span></div>
+              <p><span class="tag">General principle</span> {{ f.general }}</p>
+              <p><span class="tag tag-blue">This reaction</span> {{ f.specific }}</p>
+            </div>
+          {% endfor %}
+        </section>
+
+        <section>
+          <h3>Reaction insights</h3>
+          <dl class="insights">
+            {% for label, value in r.insights %}
+              <div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>
+            {% endfor %}
+          </dl>
+        </section>
+      </div>
+    {% else %}
+      <p class="empty">Your prediction will appear here. Enter reactants on the left and choose Predict Reaction.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="info">
+  <h2>What can be predicted?</h2>
+  <div class="grid-3">
+    <div class="tile"><h3>Product</h3><p>Which compounds may be formed?</p></div>
+    <div class="tile"><h3>Yield</h3><p>How much product is obtained?</p></div>
+    <div class="tile"><h3>Reaction rate</h3><p>How quickly is the reaction taking place?</p></div>
+    <div class="tile"><h3>Pathway</h3><p>What are the possible reaction steps or mechanisms?</p></div>
+    <div class="tile"><h3>Conditions</h3><p>How do temperature, solvent or catalysts influence the reaction?</p></div>
+    <div class="tile"><h3>Selectivity</h3><p>Which product may be favoured?</p></div>
+  </div>
+  <p class="muted">This demo identifies products and explains the transformation. It does not estimate yield or rate.</p>
+</section>
+{% endblock %}

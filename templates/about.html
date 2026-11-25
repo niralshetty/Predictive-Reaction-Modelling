@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% set active = 'about' %}
+{% block content %}
+<section class="hero">
+  <h1>About the project</h1>
+  <p class="lead">Predict First → Test Carefully → Improve the Model.</p>
+</section>
+
+<section class="prose">
+  <h2>Overview</h2>
+  <p>Predictive Reaction Modelling combines chemical principles with computational methods to estimate possible reaction outcomes. It helps researchers explore reaction possibilities, understand chemical transformations, and investigate suitable reaction conditions before experimental testing.</p>
+  <p>This website is an educational demonstration created as part of an Engineering Chemistry project. It is not a professionally validated prediction engine.</p>
+
+  <h2>How it works</h2>
+  <p><strong>Input → Model → Prediction → Output → Validation.</strong> You enter reactants and conditions. A Python program matches them against a small list of supported reactions using simple rules, then shows the reaction, its structures and an explanation. Unsupported reactions are reported as unsupported; nothing is guessed. Validation always needs literature checks and laboratory work.</p>
+</section>
+
+<section class="info">
+  <h2>Applications</h2>
+  <div class="grid-2 tiles">
+    <div class="tile"><h3>Drug Discovery</h3><p>Explore synthetic routes and identify promising reactions.</p></div>
+    <div class="tile"><h3>Materials Science</h3><p>Design polymers, coatings and advanced materials.</p></div>
+    <div class="tile"><h3>Chemical Industry</h3><p>Optimise process conditions and reduce unwanted by-products.</p></div>
+    <div class="tile"><h3>Green Chemistry</h3><p>Reduce trial-and-error, waste, energy consumption and solvent use.</p></div>
+  </div>
+</section>
+
+<section class="info">
+  <div class="grid-2 tiles">
+    <div class="tile">
+      <h2>Advantages</h2>
+      <ul>
+        <li><strong>Saves time:</strong> screens possible reactions before laboratory testing.</li>
+        <li><strong>Reduces cost:</strong> can reduce unnecessary experiments and material use.</li>
+        <li><strong>Supports safety:</strong> helps flag difficult conditions or hazards for further review.</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h2>Limitations</h2>
+      <ul>
+        <li><strong>Data quality:</strong> incomplete or inaccurate data gives incorrect predictions.</li>
+        <li><strong>Complex chemistry:</strong> side reactions, impurities and unusual conditions are hard to model.</li>
+        <li><strong>Uncertainty:</strong> predictions may not match laboratory results.</li>
+        <li><strong>Validation:</strong> important predictions need literature checks and experiments.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="muted">Predictive models support chemical understanding. They do not replace laboratory experiments.</p>
+</section>
+{% endblock %}
